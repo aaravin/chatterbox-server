@@ -32,10 +32,11 @@ var requestHandler = function(request, response) {
 
   console.log("Serving request type " + request.method + " for url " + request.url);
 
+  var correctURL = request.url.split("/")[1] === "classes";
   var statusCode;
   var headers;
   // The outgoing status.
-  if (request.method === "GET") {
+  if (request.method === "GET" && correctURL) {
     statusCode = 200;
 
     // See the note below about CORS headers.
@@ -59,7 +60,7 @@ var requestHandler = function(request, response) {
     response.end(JSON.stringify({results: messageData}));
   }
 
-  if (request.method === "POST") {
+  if (request.method === "POST" && correctURL) {
     statusCode = 201;
     headers = defaultCorsHeaders;
     headers['Content-Type'] = "application/json";
@@ -76,7 +77,30 @@ var requestHandler = function(request, response) {
       response.writeHead(statusCode, headers);
       response.end(JSON.stringify({results: messageData}));
     });
+  }
 
+  if (!correctURL) {
+    statusCode = 404;
+
+    // See the note below about CORS headers.
+    headers = defaultCorsHeaders;
+
+    // Tell the client we are sending them plain text.
+    // You will need to change this if you are sending something
+    // other than plain text, like JSON or HTML.
+    headers['Content-Type'] = "application/json";
+
+    // .writeHead() writes to the request line and headers of the response,
+    // which includes the status and all headers.
+    response.writeHead(statusCode, headers);
+
+    // Make sure to always call response.end() - Node may not send
+    // anything back to the client until you do. The string you pass to
+    // response.end() will be the body of the response - i.e. what shows
+    // up in the browser.
+    // Calling .end "flushes" the response's internal buffer, forcing
+    // node to actually send all the data over to the client.
+    response.end(JSON.stringify({results: messageData}));
   }
 };
 
