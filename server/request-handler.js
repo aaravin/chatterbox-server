@@ -31,25 +31,26 @@ var requestHandler = function(request, response) {
   // debugging help, but you should always be careful about leaving stray
   // console.logs in your code.
 
+  var serveStaticFile = function(filename) {
+    var text = fs.readFileSync(filename, 'utf8');
+    var headers = defaultCorsHeaders;
+    headers['Content-Type'] = 'text/html';
+    response.writeHead(200, headers);
+    response.write(text);
+    response.end();
+  }
+
+
   console.log("Serving request type " + request.method + " for url " + request.url);
 
   var correctURL = request.url.split("/")[1] === "classes";
   var statusCode;
   var headers;
-  // The outgoing status.
-  if (request.url === '/') {
-    console.log('DIRECTORY: ' + __dirname);
-    var text = fs.readFileSync('../client/index.html', 'utf8');
-    console.log(text);
-      // console.log(html);
-      // if (err) {
-      //   throw err;
-      // }
-    headers = defaultCorsHeaders;
-    headers['Content-Type'] = "text/html";
-    response.writeHead(200, headers);
-    response.write(text);
-    response.end();
+  var url = request.url.split('?')[0];
+  if (url === '/') {
+    serveStaticFile('../client/index.html');
+  } else {
+    serveStaticFile('../client' + url);
   }
 
   if (request.method === "GET" && correctURL) {
