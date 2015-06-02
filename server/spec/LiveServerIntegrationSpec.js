@@ -42,7 +42,6 @@ describe('server', function() {
         message: 'Do my bidding!'}
     };
     request(requestParams, function(error, response, body) {
-      console.log('BODY: ' + JSON.stringify(body));
       expect(response.statusCode).to.equal(201);
       done();
     });

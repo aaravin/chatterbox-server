@@ -1,3 +1,4 @@
+var fs = require('fs');
 /*************************************************************
 
 You should implement your request handler function in this file.
@@ -36,6 +37,21 @@ var requestHandler = function(request, response) {
   var statusCode;
   var headers;
   // The outgoing status.
+  if (request.url === '/') {
+    console.log('DIRECTORY: ' + __dirname);
+    var text = fs.readFileSync('../client/index.html', 'utf8');
+    console.log(text);
+      // console.log(html);
+      // if (err) {
+      //   throw err;
+      // }
+    headers = defaultCorsHeaders;
+    headers['Content-Type'] = "text/html";
+    response.writeHead(200, headers);
+    response.write(text);
+    response.end();
+  }
+
   if (request.method === "GET" && correctURL) {
     statusCode = 200;
 
