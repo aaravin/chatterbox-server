@@ -49,7 +49,7 @@ var requestHandler = function(request, response) {
   var url = request.url.split('?')[0];
   if (url === '/') {
     serveStaticFile('../client/index.html');
-  } else {
+  } else if (!correctURL) {
     serveStaticFile('../client' + url);
   }
 

@@ -51,7 +51,7 @@ app.init = function(){
 
 app.send = function(message){
   $.ajax({
-    url: app.server,
+    url: app.server + '/classes/messages',
     type: 'POST',
     data: JSON.stringify(message),
     contentType: 'application/json',
@@ -68,7 +68,7 @@ app.send = function(message){
 
 app.fetch = function(){
   $.ajax({
-    url: this.server,
+    url: this.server + '/classes/messages',
     type: 'GET',
     order: 'createdAt',
     success: function (data) {
