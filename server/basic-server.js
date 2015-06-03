@@ -28,26 +28,22 @@ var app = express();
 
 //   // res.send('hello world');
 // });
-var messageData = [];
 // var stream = fs.createWriteStream('./messages.txt', {flags: 'r+'});
 app.use(express.static('../client'));
 app.use(parser.urlencoded({ extended: false }));
 app.use(parser.json());
 app.post('/classes/messages', function(req, res) {
   messageData.unshift(req.body);
-  fs.appendFileSync('messages.txt', JSON.stringify(req.body) + '\n');
+  fs.appendFileSync('messages.json', JSON.stringify(req.body) + '\n');
 });
 
 app.get('/classes/messages', function(req, res) {
-  if (fs.existsSync('messages.txt')) {
-    var messages = fs.readFileSync('messages.txt', 'utf8');
-    var messageArray = messages.toString().split('\n').slice(0, -1);
-    var parsedMessages = messageArray.map(function(msg) {
-      // console.log('NEXT MESSAGE: ' + msg);
-      console.log(msg);
-      return msg;
-    });
-    res.send({results: messageData});
+  if (fs.existsSync('messages.json')) {
+    var messages = fs.readFileSync('messages.json', 'utf8');
+    var messageArrayStr = '[' + messages.split('\n').slice(0, -1).join(',') + ']';
+    var parsedArray = JSON.parse(messageArrayStr);
+    // console.log(parsedArray);
+    res.send({results: parsedArray});
   } else {
     res.send({results: []});
   }
