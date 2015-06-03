@@ -24,11 +24,7 @@ var port = 3000;
 //
 // After creating the server, we will tell it to listen on the given port and IP. */
 var app = express();
-// app.get('/', function(req, res){
 
-//   // res.send('hello world');
-// });
-// var stream = fs.createWriteStream('./messages.txt', {flags: 'r+'});
 app.use(express.static('../client'));
 app.use(parser.urlencoded({ extended: false }));
 app.use(parser.json());
@@ -42,7 +38,6 @@ app.get('/classes/messages', function(req, res) {
     var messages = fs.readFileSync('messages.json', 'utf8');
     var messageArrayStr = '[' + messages.split('\n').slice(0, -1).join(',') + ']';
     var parsedArray = JSON.parse(messageArrayStr);
-    // console.log(parsedArray);
     res.send({results: parsedArray});
   } else {
     res.send({results: []});
