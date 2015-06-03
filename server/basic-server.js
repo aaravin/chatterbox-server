@@ -1,6 +1,8 @@
 /* Import node's http module: */
 var http = require("http");
 var fs = require('fs');
+var express = require('express');
+var parser = require('body-parser');
 var requestHandler = require('./request-handler.js').requestHandler;
 
 // Every server needs to listen on a port with a unique number. The
@@ -13,7 +15,7 @@ var port = 3000;
 // For now, since you're running this server on your local machine,
 // we'll have it listen on the IP address 127.0.0.1, which is a
 // special address that always refers to localhost.
-var ip = "127.0.0.1";
+// var ip = "127.0.0.1";
 
 // We use node's http module to create a server.
 //
@@ -21,14 +23,41 @@ var ip = "127.0.0.1";
 // incoming requests.
 //
 // After creating the server, we will tell it to listen on the given port and IP. */
-// fs.readFile('../client/index.html', function(err, html) {
-//   if (err) {
-//     throw err;
-//   }
-  var server = http.createServer(requestHandler);
-  console.log("Listening on http://" + ip + ":" + port);
-  server.listen(port, ip);
+var app = express();
+// app.get('/', function(req, res){
+
+//   // res.send('hello world');
 // });
+var messageData = [];
+// var stream = fs.createWriteStream('./messages.txt', {flags: 'r+'});
+app.use(express.static('../client'));
+app.use(parser.urlencoded({ extended: false }));
+app.use(parser.json());
+app.post('/classes/messages', function(req, res) {
+  messageData.unshift(req.body);
+  fs.appendFileSync('messages.txt', JSON.stringify(req.body) + '\n');
+});
+
+app.get('/classes/messages', function(req, res) {
+  if (fs.existsSync('messages.txt')) {
+    var messages = fs.readFileSync('messages.txt', 'utf8');
+    var messageArray = messages.toString().split('\n').slice(0, -1);
+    var parsedMessages = messageArray.map(function(msg) {
+      // console.log('NEXT MESSAGE: ' + msg);
+      console.log(msg);
+      return msg;
+    });
+    res.send({results: messageData});
+  } else {
+    res.send({results: []});
+  }
+});
+app.listen(port);
+
+// var server = http.createServer(requestHandler);
+// console.log("Listening on http://" + ip + ":" + port);
+// server.listen(port, ip);
+
 
 // To start this server, run:
 //
